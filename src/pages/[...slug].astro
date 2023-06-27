@@ -1,0 +1,32 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/Card.astro";
+
+import client, { getAllPages, getPage } from "../util/client";
+
+export async function getStaticPaths() {
+	const t: any[] = (await getAllPages()).map((page) => ({
+		params: { slug: page.path },
+		props: { pageId: page.id },
+	}));
+
+	return t;
+}
+
+const params = Astro.params;
+const props = Astro.props;
+
+const data = await getPage(props.pageId);
+const { title, description, render } = data;
+
+const allPages = (await getAllPages()).map((page) => page.path);
+---
+
+<Layout title={`${title} - CS Wiki`}>
+	<main>
+		<h1 class="text-4xl font-bold">{title}</h1>
+		<p class="py-2">{description} description woo</p>
+		<hr class="py-2" />
+		<Fragment set:html={render} />
+	</main>
+</Layout>
